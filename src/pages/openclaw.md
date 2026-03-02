@@ -1,394 +1,375 @@
 ---
 layout: ../layouts/MarkdownLayout.astro
-title: 'Open CLAW — Use Cases, Roadmap & CLI Tools'
-description: 'A comprehensive guide to Open CLAW: real-world use cases, a developer roadmap from zero to production, and CLI tools that supercharge your personal AI assistant.'
+title: 'Awesome Open CLAW Use Cases'
+description: '50+ original use cases for Open CLAW — the personal AI assistant that lives in your messages, your terminal, your phone. Real ideas for real workflows.'
 noIndex: false
 permalink: /openclaw
 ---
 
-# Open CLAW — Use Cases, Roadmap & CLI Tools
+# Awesome Open CLAW Use Cases
 
-> Your personal AI assistant. Runs on your devices. Talks on your channels. Does what you tell it.
-
-That's [Open CLAW](https://github.com/openclaw/openclaw) in one line. Everything below is how to actually use it.
+> [Open CLAW](https://github.com/openclaw/openclaw) is a personal AI assistant that runs on your machine and talks to you on the channels you already use — WhatsApp, Telegram, Slack, Discord, Signal, iMessage, and 20+ more. It's a daemon, not an app. These are the best ways to use it.
 
 ---
 
-## What Is Open CLAW?
+## For Developers & Engineers
 
-Open CLAW is a local-first, personal AI assistant. You install it. You run it. It connects to the messaging apps you already use — WhatsApp, Telegram, Slack, Discord, Signal, iMessage, Teams, and [20+ more channels](https://docs.openclaw.ai/channels).
+### 1. PR Review Digest
 
-It's not a chatbot-in-a-browser. It's a **daemon on your machine** that routes AI through every surface of your digital life.
+You push code all day. Reviews pile up. Set up your agent to watch your GitHub repos and send you a Slack DM every evening: "4 PRs need your review. The auth refactor is the big one — 847 lines, touches 12 files. The other three are under 50 lines each." Next morning, reply "approve the three small ones, I'll look at auth after standup." Done.
 
-The key insight: most people don't need another AI app. They need AI **where they already are** — in their messages, their terminals, their workflows. That's what Open CLAW does.
+**How it works:** Cron job polls GitHub API every few hours. Agent summarizes diffs, flags risky changes (large files, security-sensitive paths, dependency updates). Delivers via whatever channel you're on. You respond in natural language and the agent posts review comments.
+
+### 2. On-Call Incident Commander
+
+3 AM page. Your server's down. Instead of groggily opening five dashboards, your agent already has context. It pulled the alert from PagerDuty, checked the runbook, queried recent deployments, and texted you: "Looks like the Redis connection pool is exhausted. Last deploy was 2 hours ago by Sarah — added a new caching layer. Rollback command ready. Say 'rollback' or 'investigate more'."
+
+**How it works:** Webhook from your alerting tool triggers the agent. It uses browser and API skills to pull logs, correlate with deploy history, and check the runbook. Multi-channel means it can also post status updates to your team's Slack while talking to you on Signal.
+
+### 3. Dependency Drift Monitor
+
+Every Monday morning, your agent scans all your projects' dependencies. Not just "there's an update available" — it tells you "express 4.x → 5.0 is a major bump, here are the 3 breaking changes that affect your codebase. jsonwebtoken has a CVE published last Thursday. lodash hasn't been updated in 18 months — consider replacing the 2 functions you use."
+
+**How it works:** Cron-scheduled skill walks your package files, cross-references npm/PyPI/crates.io advisories, checks changelogs, and correlates with your actual import usage. Sends a structured report via Telegram or email.
+
+### 4. Log Whisperer
+
+"Why did the payment service crash at 2:47 PM?" You text this to your agent. It SSHs into your server, greps the logs around that timestamp, correlates with the request traces, and comes back with: "A null pointer in the webhook handler. Customer ID 4829 sent a payload missing the `currency` field. Your validation schema doesn't enforce it. Here's a fix."
+
+**How it works:** Agent has SSH access via configured skills. Understands your log format and can navigate your codebase. You interact from any channel — even your phone while walking to lunch.
+
+### 5. Architecture Decision Record Writer
+
+You just finished a design discussion in Slack. Tell your agent "write up the ADR for the database migration decision." It reads the Slack thread, extracts the key arguments, identifies the decision and tradeoffs, and drafts a proper ADR in your team's format. Push it to your docs repo. You review and merge.
+
+**How it works:** Agent reads channel history (Slack/Discord skill), understands your ADR template from memory, generates the document, and creates a PR via GitHub API. All from a single message.
+
+### 6. Release Notes That Don't Suck
+
+Tag a release. Your agent reads every commit since the last tag, groups them by type (features, fixes, docs, internal), writes human-readable descriptions, identifies breaking changes, and posts the release notes to GitHub, Slack, and your changelog. No more "updated stuff" release notes.
+
+**How it works:** Git log parsing + commit message analysis. Agent understands conventional commits but also handles messy commit messages by reading the actual diffs. Cron or webhook triggered on tag push.
+
+### 7. Test Failure Explainer
+
+CI goes red. Instead of clicking through to the build log, your agent already messaged you: "3 tests failed in the auth module. Two are the same root cause — you renamed `getUserById` to `findUser` but the mock factory still uses the old name. Third failure is a flaky timeout in the webhook integration test, been failing intermittently for 2 weeks."
+
+**How it works:** Webhook on CI failure → agent fetches build logs → parses test output → correlates with recent commits → classifies root cause. Knows your codebase well enough to distinguish real failures from flaky tests.
+
+---
+
+## For Founders & Business
+
+### 8. Investor Update That Writes Itself
+
+First of the month. Your agent pulls MRR from Stripe, active users from PostHog, burn rate from your bank feed, sprint velocity from Linear, and team headcount from your HR tool. Drafts an investor update in your voice. "MRR hit $47K, up 12% MoM. Shipped the enterprise SSO feature. Hired a senior backend engineer. Runway is 14 months." You tweak two sentences and send.
+
+**How it works:** Scheduled monthly cron. Agent queries multiple APIs, maintains a template based on your previous updates (stored in memory), and delivers the draft to your channel of choice. You reply with edits.
+
+### 9. Competitive Intelligence Radar
+
+Your agent monitors your competitors' pricing pages, job postings, blog posts, and changelog feeds. Weekly digest: "Competitor A just launched a free tier. Competitor B posted 3 senior ML engineer jobs — likely building an AI feature. Competitor C hasn't shipped anything in 6 weeks." You see the landscape without checking 15 websites.
+
+**How it works:** Browser skill visits configured URLs on a schedule. Agent diffs pages against previous snapshots, identifies meaningful changes, filters noise. Stores history in memory for trend analysis.
+
+### 10. Customer Voice Synthesizer
+
+Support tickets, app store reviews, NPS responses, Twitter mentions — your customers talk to you in 10 different places. Your agent aggregates all of it and sends you a weekly synthesis: "Top 3 pain points this week: (1) onboarding flow confusion — 14 mentions, (2) export feature request — 8 mentions, (3) pricing page clarity — 6 mentions. Sentiment trending up vs. last week."
+
+**How it works:** Multi-source ingestion via API skills and browser scraping. NLP classification and clustering. Trend tracking via memory. Delivered as a structured report to Slack or email.
+
+### 11. Revenue Anomaly Detector
+
+Stripe webhook fires. Your agent notices something: "Revenue dropped 23% in the last 4 hours compared to this time last Tuesday. Churn is normal. Looks like new signups dropped — your landing page might be down." You check. It was. You saved hours of lost revenue because your agent noticed before you did.
+
+**How it works:** Webhook-driven real-time monitoring. Agent maintains rolling baselines in memory. Compares current metrics against historical patterns. Alerts immediately on significant deviations.
+
+### 12. Hiring Pipeline Narrator
+
+"Where do we stand on hiring?" you text your agent at 9 AM. It checks your ATS: "3 candidates in final round for the senior frontend role — interviews scheduled this week. The DevOps role has 12 new applicants, 4 look strong. The design role has been open 6 weeks with no good candidates — consider adjusting the job description or trying a different channel."
+
+**How it works:** ATS API integration (Greenhouse, Lever, Ashby). Agent queries on demand or via scheduled reports. Tracks pipeline velocity and flags stale roles.
+
+---
+
+## For Your Personal Life
+
+### 13. Grocery Autopilot
+
+You share a recipe link in WhatsApp: "making this tonight." Your agent extracts the ingredients, checks them against what you already have (you told it last week), and adds the missing items to your grocery list. Friday afternoon it sends you the consolidated list: "You need: heavy cream, thyme, 2 lemons, arborio rice." Organized by store section.
+
+**How it works:** Web scraping for recipe extraction. Memory-based pantry tracking (you tell it what you bought, it maintains the list). Scheduled weekly summary + on-demand additions. Delivered to whichever channel you use for personal stuff.
+
+### 14. Travel Agent That Actually Works
+
+"I want to go to Lisbon in March for 5 days. Budget around $2K. I like walking neighborhoods, eating at local spots, and avoiding tourist traps." Your agent researches flights, hotels near interesting neighborhoods, builds a day-by-day itinerary with restaurant suggestions, and checks visa requirements. It delivers the whole plan as a Canvas visualization. You tweak it over the next week via chat.
+
+**How it works:** Browser skill for flight/hotel research. Memory for your travel preferences (learned from past trips). Canvas for visual itinerary presentation. Ongoing conversation for refinements.
+
+### 15. Kids' School Watcher
+
+School portal updates grades at random times. Your agent checks it daily and sends you a calm summary: "Mia got an A on the math test. Jake's history essay is due Friday — he hasn't submitted it yet. Parent-teacher conference slots opened up, the good times go fast." No more logging into three different school portals.
+
+**How it works:** Browser skill with saved login credentials (stored securely in your workspace). Daily cron scrapes portal pages, diffs against previous state, highlights actionable items. Multi-child support across different school systems.
+
+### 16. Home Maintenance Tracker
+
+"When did I last change the HVAC filter?" you text your agent. "October 14. That's 139 days ago. Manufacturer recommends every 90 days. You should change it this weekend." It also proactively reminds you: gutters before fall, smoke detector batteries twice a year, water heater flush annually. All tracked, all timed to your specific home.
+
+**How it works:** Memory-based tracking. You tell it things naturally ("changed the furnace filter today") and it logs them. Cron-scheduled proactive reminders based on manufacturer guidelines and your home's specifics.
+
+### 17. Package Delivery Tracker
+
+Your agent watches your email for shipping confirmations. When it spots one, it extracts the tracking number and monitors delivery status. "Your Amazon order is out for delivery — ETA 2-4 PM. The guitar strings from Reverb shipped yesterday, arriving Thursday. The return you sent back was received by the warehouse today." All in one place, zero effort.
+
+**How it works:** Gmail Pub/Sub integration monitors incoming emails. Agent extracts tracking numbers via pattern matching, queries carrier APIs, and consolidates status updates. Alerts you on delivery day.
+
+### 18. Weather-Aware Day Planner
+
+6:30 AM. Your agent checks the weather and your calendar. "Rain starts at 2 PM. You have an outdoor lunch at 12:30 — you'll be fine, but bring an umbrella for the walk back. Your 4 PM run should move to morning. Tomorrow looks clear." It knows your habits because you told it about them once.
+
+**How it works:** Weather API + calendar integration + memory of your routines. Correlates outdoor activities with forecast. Delivered as a morning message before you even think to check.
+
+### 19. Birthday & Gift Assistant
+
+Two days before your friend's birthday, your agent reminds you. But it goes further: "Sarah turns 35 on Thursday. Last year you got her a cookbook. She's been posting about pottery classes lately. The studio near her apartment does gift cards." You reply "order the gift card" and it handles it.
+
+**How it works:** Contact date tracking in memory. Social media monitoring (optional) for interest signals. Purchase history in memory to avoid repeats. E-commerce browsing via browser skill for gift suggestions.
+
+### 20. Subscription Audit
+
+First of each month: "You have 23 active subscriptions totaling $847/month. Three you haven't used in 90+ days: Figma ($15), MasterClass ($15), that meditation app ($13). The Spotify family plan went up $2 last month. Here's the full breakdown." Finally, clarity on where your money goes.
+
+**How it works:** Bank feed integration or manual subscription logging. Agent tracks usage signals (email receipts, login frequency from email notifications). Monthly cron delivers the report.
+
+---
+
+## For Content Creators
+
+### 21. Newsletter Ghostwriter
+
+All week you save bookmarks, highlight tweets, jot quick notes. Thursday evening, your agent synthesizes everything into a newsletter draft: introduction that ties the themes together, three main sections with your annotations, a "quick links" footer. It knows your voice because it's read every issue you've ever sent. You spend 20 minutes editing instead of 3 hours writing.
+
+**How it works:** Memory accumulates your saves and notes throughout the week. Cron triggers Thursday evening. Agent reads your past newsletters from memory to match tone and structure. Delivers draft to your channel for review.
+
+### 22. Video Essay Research Companion
+
+You're planning a video on "why cities keep building ugly buildings." Tell your agent. Over the next 24 hours, it researches: academic papers on urban planning incentives, notable examples with before/after photos, expert quotes, counterarguments. Delivers a structured outline with sources and timestamps for where to find key footage. You'd have spent a week doing this manually.
+
+**How it works:** Browser skill for deep web research. Academic search via Google Scholar. Agent structures findings into your preferred outline format. Delivers as a Canvas document you can rearrange.
+
+### 23. Social Media Calendar That Thinks
+
+Instead of staring at a blank content calendar, tell your agent your goals: "grow developer audience, promote the new course, stay relevant in the AI conversation." It generates a week of post ideas with hooks, threads, and suggested posting times based on when your audience is most active. Each morning, it sends you today's draft. You tweak and post.
+
+**How it works:** Memory stores your audience data, past performance, and content pillars. Agent analyzes trending topics via browser skill. Generates posts calibrated to platform (different formats for X vs. LinkedIn vs. Threads). Cron delivery on your schedule.
+
+### 24. Podcast Show Notes on Autopilot
+
+Record your episode. Drop the audio file to your agent. Within minutes: timestamped chapter markers, key quotes pulled out, a two-paragraph summary, guest bio compiled from their website, and a tweet thread promoting the episode. What used to take 2 hours of post-production takes 2 minutes of review.
+
+**How it works:** Audio transcription via built-in media pipeline. Agent identifies topics and transitions for chapter markers. Browser skill pulls guest info. Formats output for your publishing platform.
+
+### 25. Trend Spotter
+
+"What should I make content about this week?" Your agent monitors HackerNews, Reddit, X, and your niche forums. It identifies rising topics before they peak: "Edge computing discussions are up 340% this week. Three popular posts about SQLite replacing Postgres for small projects. A new open-source alternative to Vercel just launched and people are excited." You're always early to the conversation.
+
+**How it works:** Multi-source monitoring via browser skill and API integrations. Agent tracks velocity of topic mentions over time, compares against baseline. Filters for your specific niche. Weekly or on-demand delivery.
+
+---
+
+## For Teams & Work
+
+### 26. Standup That Runs Itself
+
+9:05 AM. Your agent messages each team member on their preferred channel: "What did you ship yesterday? What's the plan today? Anything blocking you?" Collects responses, identifies blockers that overlap, and posts a compiled standup summary to the team Slack. If someone doesn't respond by 9:30, it sends a gentle nudge.
+
+**How it works:** Multi-channel routing — each person gets the message where they actually respond (some prefer Telegram, others Slack, one person uses iMessage). Agent aggregates responses, identifies common themes, posts summary. Cron-driven daily.
+
+### 27. Meeting Prep Brief
+
+You have a meeting with a client in 30 minutes. Your agent sends you a brief: "Last meeting was Jan 15 — they asked about API rate limits and you promised to follow up (you didn't). They have 3 open support tickets. Their usage went up 40% last month. Their contract renews in 6 weeks." You walk in prepared.
+
+**How it works:** Calendar integration detects upcoming meetings. Agent cross-references attendees with your CRM, support tool, and previous meeting notes stored in memory. Delivers brief 30 minutes before start time.
+
+### 28. Knowledge Base That Stays Current
+
+Your team docs are always outdated. Set up your agent to compare documentation against the actual codebase weekly. "The authentication guide still references the old JWT flow — you switched to session tokens 3 months ago. The deployment docs mention a staging server that no longer exists. The API reference is missing 4 endpoints added in the last sprint."
+
+**How it works:** Cron-scheduled comparison between docs content and actual code/config. Agent identifies discrepancies using code analysis skills. Reports specific files and sections that need updating, with suggested corrections.
+
+### 29. Cross-Timezone Team Coordinator
+
+Your team spans San Francisco, London, and Tokyo. Your agent knows everyone's working hours and manages handoffs: "The Tokyo team finished the API changes and left notes. London reviewed and found two issues — logged in Linear. Here's what needs your attention when you start today." Each timezone gets a tailored briefing when their day begins.
+
+**How it works:** Timezone-aware cron scheduling. Agent monitors project management tools for updates, filters by relevance to each timezone's team members, and delivers personalized briefings at each team's start-of-day.
+
+### 30. Decision Log Keeper
+
+Decisions happen in Slack threads, Zoom calls, hallway conversations. They get lost. Tell your agent every time a decision is made — or better, it watches your channels and identifies decisions automatically. "Decision: We're using Postgres, not MySQL. Decided by: CTO. Reason: team expertise. Date: March 1." Searchable forever.
+
+**How it works:** Passive monitoring of team channels (with appropriate permissions). Agent identifies decision-language patterns. Confirms with the relevant person. Stores in structured memory. Queryable: "what did we decide about the database?"
+
+---
+
+## For Health & Wellness
+
+### 31. Fitness Program That Adapts
+
+Your agent knows your workout plan. Monday morning: "Today is squat day. You mentioned your left knee was sore yesterday, so I've swapped barbell squats for leg press and added extra quad stretches. Projected session: 55 minutes." After your workout, you text "done, knee felt fine actually" and it adjusts tomorrow's plan accordingly.
+
+**How it works:** Workout plan stored in memory. Agent tracks your reported soreness, sleep, and energy levels. Modifies exercises based on a set of substitution rules and your feedback loop. Delivered daily before your usual gym time.
+
+### 32. Sleep Pattern Analyzer
+
+You wear a fitness tracker. Your agent ingests the sleep data weekly and correlates it with everything else: "You average 6.2 hours this month, down from 6.8 last month. Your worst nights correlate with late meetings (after 7 PM) and screen time past 11 PM. Best sleep happens when you run in the morning." Actionable, not just data.
+
+**How it works:** Health data integration via Apple Health exports or API. Agent maintains rolling statistics in memory. Correlates with calendar events, activity logs, and your reported habits. Weekly insight delivery.
+
+### 33. Meal Logger & Nutrition Tracker
+
+You photograph your lunch and send it to your agent. "Grilled chicken salad with avocado, about 500 calories, 40g protein." End of day: "You're at 1,850 calories, 120g protein, 65g fat. You're 30g short on protein — a Greek yogurt before bed gets you there." No app to open, no food to search for. Just text a photo.
+
+**How it works:** Image analysis via vision-capable model. Agent maintains daily running totals in memory. Knows your targets because you told it once. Suggests corrections based on what's practical, not theoretical.
+
+### 34. Medication & Supplement Tracker
+
+"Taking my vitamins" you text at 8 AM. Your agent logs it. If you forget, it reminds you at 9:30 AM. When you add a new supplement, it checks for interactions with your current stack. Monthly report: "You've been consistent 26 out of 30 days. The magnesium + zinc you're taking might compete for absorption — consider taking them at different times."
+
+**How it works:** Simple text-based logging stored in memory. Interaction checking via health databases (browser skill). Adherence tracking with gentle reminders via cron. No app needed — just your messages.
+
+### 35. Therapy Session Prep
+
+Before your weekly therapy appointment, your agent compiles a brief for you (not your therapist — for your own reference): "This week you mentioned feeling overwhelmed on Tuesday and Thursday. The trigger both times was work deadlines. You slept poorly those nights. You had two really good days — Wednesday after your run and Saturday with friends." Helps you make the most of your session.
+
+**How it works:** Analyzes your messages to the agent throughout the week (strictly private, local-only). Identifies mood patterns, stressors, and positive experiences. Delivers a personal summary the morning of your appointment.
+
+---
+
+## For Education & Learning
+
+### 36. Spaced Repetition Tutor
+
+You're learning Spanish. Your agent sends you 10 flashcards via Telegram at breakfast. You answer by voice. It tracks your accuracy, adjusts intervals — words you know well appear less often, tricky ones come back the next day. "You've mastered 340 words. Your weakest area is subjunctive conjugations. Tomorrow I'll focus on those."
+
+**How it works:** Spaced repetition algorithm running in the agent's memory. Cards generated from your learning material. Voice input via Talk Mode for pronunciation practice. Adaptive scheduling via cron.
+
+### 37. Paper Reading Group Organizer
+
+Your research group reads one paper per week. Members drop arXiv links into the group chat. Your agent summarizes each paper, generates 5 discussion questions, identifies connections to papers you've read before, and sends the prep package 24 hours before the meeting. After the meeting, it archives the discussion notes.
+
+**How it works:** Group chat monitoring for paper links. Browser skill fetches and parses papers. Agent generates structured summaries. Memory maintains reading history for cross-references. Cron delivers prep materials.
+
+### 38. Learn-in-Public Accountability Partner
+
+You committed to learning Rust. Your agent checks in daily: "Day 14 of your Rust journey. Yesterday you completed the ownership chapter. Today's suggested exercise: implement a linked list. You're 40% through your 30-day plan." If you skip a day, it adapts the schedule. If you skip three days, it asks what's going on.
+
+**How it works:** Learning plan stored in memory with daily milestones. Progress tracked via your check-ins. Agent adapts pace based on actual progress vs. plan. Daily delivery via your preferred channel.
+
+### 39. Conference Talk Prep Coach
+
+You're giving a talk in 3 weeks. Your agent helps you prepare: "Based on your outline, your talk runs about 35 minutes. The section on caching is dense — consider splitting it into two parts with a demo in between. I found 3 recent talks on similar topics — here are the angles they took so you can differentiate. Want me to generate a practice Q&A?"
+
+**How it works:** You share your outline and talk details. Agent analyzes pacing, identifies areas that need more/less depth, researches similar talks via browser skill. Generates practice questions. Tracks your preparation progress over the weeks.
+
+### 40. Textbook Companion
+
+You're working through a dense textbook. After each chapter, you tell your agent what confused you. It explains it differently, generates practice problems, and connects concepts to things you already know. "Chapter 7's explanation of backpropagation assumes you understood the chain rule from Chapter 3. Here's the connection they didn't make explicit."
+
+**How it works:** Memory maintains your learning context — what you've covered, what confused you, your background knowledge. Agent generates explanations tailored to your level. Creates practice problems with step-by-step solutions.
+
+---
+
+## For Finance & Planning
+
+### 41. Tax Season Auto-Organizer
+
+Throughout the year, whenever you get a receipt, a 1099, a donation acknowledgment — you forward it to your agent. It categorizes everything: business expense, medical, charitable, investment. Come January: "Your tax documents are organized. 147 items across 8 categories. Total deductible business expenses: $23,400. You're missing the 1099 from your freelance client in Q3 — want me to draft a reminder email?"
+
+**How it works:** Email forwarding or photo-based receipt capture. Agent categorizes using tax rules stored in memory. Maintains running totals. Generates year-end summary with gaps identified. All data stays local.
+
+### 42. Real Estate Scout
+
+"Find me a 3-bedroom house in Austin under $500K with a garage and good schools." Your agent monitors Zillow and Redfin daily. When a match appears: "New listing at 1847 Oak Street. $485K, 3BR/2BA, 1,800 sqft. School rating 8/10. Commute to your office: 22 minutes. Listed 2 hours ago — these go fast." You reply "schedule a showing" and it drafts the email to the realtor.
+
+**How it works:** Browser skill monitors listing sites with your saved search criteria. Agent evaluates each listing against your stated priorities (not just filters — it understands "good schools" and "quiet street"). Alerts immediately on strong matches.
+
+### 43. Freelance Invoice & Payment Tracker
+
+You send an invoice. Your agent tracks it. 30 days later: "Invoice #047 to Acme Corp is overdue. Originally due Feb 15. Amount: $4,200. This is their third late payment in a row. Want me to draft a follow-up email?" It also maintains your running P&L: "February revenue: $12,800. Outstanding: $7,400. Average days to payment: 34."
+
+**How it works:** You tell the agent when you send invoices and when payments arrive. It maintains the ledger in memory, tracks payment patterns per client, generates follow-up reminders via cron, and provides financial summaries on demand.
+
+### 44. Investment Portfolio Narrator
+
+"How are my investments doing?" Your agent checks your portfolio: "Your total is up 3.2% this month. The S&P 500 is up 2.1%, so you're outperforming. Your biggest winner is the semiconductor ETF (+8.4%). Your crypto allocation drifted to 12% of your portfolio — your target was 10%. The bond fund you bought in January is down 1.2%, which is expected with rate movements."
+
+**How it works:** API integration with your brokerage or manual position tracking in memory. Agent maintains your target allocation, tracks performance against benchmarks, and identifies when rebalancing is needed. On-demand or weekly reports.
+
+---
+
+## For Communication & Relationships
+
+### 45. Language Practice Partner
+
+Every morning at 8 AM, your agent starts a conversation with you in French. It adapts to your level — if you're struggling, it simplifies. If you're flowing, it challenges you with idioms and complex tenses. End of week: "You had 5 conversations this week. Vocabulary used: 420 unique words (up from 380 last week). Grammar accuracy: 78%. Biggest improvement: past tense. Focus area: subjunctive mood."
+
+**How it works:** Daily cron-triggered conversation via Telegram. Agent maintains your vocabulary list, grammar accuracy stats, and level progression in memory. Uses voice mode for pronunciation practice. Adapts difficulty dynamically.
+
+### 46. Group Trip Planner
+
+8 friends. 3 timezones. 47 opinions. Your agent manages it: polls the group chat for date preferences, collects budget ranges, researches destinations that match constraints, and presents 3 options with cost breakdowns. "Option A: Lisbon, $1,200/person including flights. Option B: Mexico City, $900/person. Option C: Montreal, $800/person. Vote by replying A, B, or C."
+
+**How it works:** Group chat integration. Agent tracks responses, manages polls, and handles the inevitable "wait, can we do the week after instead?" changes. Presents consolidated options and manages the decision process without anyone being the "organizer."
+
+### 47. Networking Follow-Up System
+
+You meet someone at a conference. You text your agent: "Met Sarah Chen, VP of Engineering at Stripe. Talked about our API design challenges. She's interested in our approach to rate limiting." Three days later, your agent reminds you: "Follow up with Sarah Chen. Draft: 'Great meeting you at the conference. I put together those notes on our rate limiting approach — happy to jump on a quick call.'"
+
+**How it works:** Contact + context stored in memory. Cron-scheduled follow-up reminders. Agent drafts personalized messages based on the original conversation context. Tracks the relationship over time.
+
+### 48. Family Communication Hub
+
+Your aging parents aren't on Slack. Your sister uses WhatsApp. Your brother only checks iMessage. Your agent bridges them all: share a photo in WhatsApp and tell your agent "send this to the family." It forwards to each person on their preferred channel. Family announcement? One message, five channels. No one gets left out because they don't use the "right" app.
+
+**How it works:** Open CLAW's multi-channel architecture is literally built for this. Agent maintains a contact → channel mapping. Message forwarding with format adaptation (some channels support images differently). Group coordination across platforms.
+
+---
+
+## For Automation & Smart Home
+
+### 49. Energy Usage Optimizer
+
+Your smart home generates data. Your agent makes sense of it: "Your electricity bill is trending 15% higher than last month. The biggest change is the HVAC running 3 extra hours daily since you lowered the thermostat to 68°F. Suggestion: set it to 70°F during work hours when you're not home, save an estimated $40/month." It can even adjust the thermostat if you connect a smart home API.
+
+**How it works:** Smart home API integration (Home Assistant, SmartThings). Agent analyzes usage patterns, correlates with weather data and your schedule, and suggests optimizations. Can execute changes with your approval.
+
+### 50. Digital Estate Manager
+
+You have 200+ online accounts. Your agent helps you maintain them: "3 accounts are using passwords from the 2019 breach. Your domain registration expires in 45 days. The credit card on file for AWS expires next month. Your GitHub personal access token expires in 2 weeks." It's the maintenance work no one does until something breaks.
+
+**How it works:** Password manager integration or manual account tracking in memory. Agent monitors expiration dates, checks breach databases, and tracks upcoming renewals. Proactive alerts via cron.
+
+---
+
+## Getting Started
 
 ```bash
 npm install -g openclaw@latest
 openclaw onboard --install-daemon
 ```
 
-Two commands. You're running.
+The wizard walks you through everything. Pick one use case from this list. Set it up. Live with it for a week. Then add another.
 
----
+The best personal AI isn't the one with the most features. It's the one that's always there, in the place you already look. That's what Open CLAW does.
 
-## Use Cases
-
-These aren't hypotheticals. These are things people are actually building and running with Open CLAW, sourced from the [awesome-openclaw-usecases](https://github.com/hesamsheikh/awesome-openclaw-usecases) community.
-
-### Social Media & Content
-
-| Use Case                        | What It Does                                                             |
-| ------------------------------- | ------------------------------------------------------------------------ |
-| **Daily Reddit Digest**         | Summarizes your favorite subreddits daily, filtered by your preferences  |
-| **Daily YouTube Digest**        | Monitors channels you follow, sends you summaries of new videos          |
-| **X Account Analysis**          | Qualitative analysis of any X/Twitter account                            |
-| **Multi-Source Tech News**      | Aggregates 109+ sources (RSS, Twitter, GitHub, web) with quality scoring |
-| **YouTube Content Pipeline**    | Automates video idea scouting, research, and tracking                    |
-| **Multi-Agent Content Factory** | Research, writing, and thumbnail agents working in Discord channels      |
-| **Podcast Production Pipeline** | Guest research → episode outlines → show notes → social promo            |
-
-### Productivity
-
-| Use Case                         | What It Does                                                                         |
-| -------------------------------- | ------------------------------------------------------------------------------------ |
-| **Custom Morning Brief**         | Daily briefing — news, tasks, content drafts, AI-recommended actions — texted to you |
-| **Inbox De-clutter**             | Summarizes newsletters, sends you a clean digest email                               |
-| **Personal CRM**                 | Auto-discovers contacts from email/calendar, natural language queries                |
-| **Multi-Channel Assistant**      | Routes tasks across Telegram, Slack, email, and calendar from one AI                 |
-| **Second Brain**                 | Text anything to remember it, search through all memories in a dashboard             |
-| **Todoist Task Manager**         | Syncs agent reasoning and progress to Todoist for transparency                       |
-| **Dynamic Dashboard**            | Real-time dashboard pulling from APIs, databases, and social media in parallel       |
-| **Meeting Notes & Action Items** | Transcripts → structured summaries → auto-created tasks in Jira/Linear/Todoist       |
-| **Habit Tracker & Coach**        | Daily check-ins via Telegram/SMS, tracks streaks, adapts tone to your progress       |
-| **Family Calendar Assistant**    | Aggregates family calendars, morning briefings, household inventory management       |
-| **Event Guest Confirmation**     | AI voice calls to confirm guest attendance, compiles summary                         |
-
-### Infrastructure & DevOps
-
-| Use Case                           | What It Does                                                                     |
-| ---------------------------------- | -------------------------------------------------------------------------------- |
-| **Self-Healing Home Server**       | Always-on infra agent with SSH, automated cron, self-healing across your network |
-| **n8n Workflow Orchestration**     | Delegates API calls to n8n via webhooks — agent never touches credentials        |
-| **Autonomous Project Management**  | Multi-agent coordination using STATE.yaml — subagents in parallel                |
-| **Multi-Channel Customer Service** | Unifies WhatsApp, Instagram, Email, Google Reviews in one AI-powered inbox       |
-
-### Creative & Building
-
-| Use Case                         | What It Does                                                                     |
-| -------------------------------- | -------------------------------------------------------------------------------- |
-| **Overnight Mini-App Builder**   | Brain dump goals → agent generates, schedules, and builds mini-apps autonomously |
-| **Autonomous Game Dev Pipeline** | Full lifecycle: backlog → implementation → registration → docs → git commit      |
-| **Multi-Agent Specialized Team** | Strategy, dev, marketing, business agents coordinated via a single Telegram chat |
-
-### Research & Learning
-
-| Use Case                              | What It Does                                                                  |
-| ------------------------------------- | ----------------------------------------------------------------------------- |
-| **AI Earnings Tracker**               | Tracks tech/AI earnings with automated previews, alerts, and summaries        |
-| **Knowledge Base (RAG)**              | Drop URLs, tweets, articles into chat → searchable knowledge base             |
-| **Market Research & Product Factory** | Mines Reddit/X for pain points, then builds MVPs that solve them              |
-| **Pre-Build Idea Validator**          | Scans GitHub, HN, npm, PyPI, Product Hunt before you build — stops if crowded |
-| **Semantic Memory Search**            | Vector-powered semantic search over markdown memory files                     |
-
-### Finance
-
-| Use Case                 | What It Does                                                                     |
-| ------------------------ | -------------------------------------------------------------------------------- |
-| **Polymarket Autopilot** | Automated paper trading on prediction markets with backtesting and daily reports |
-
-### Voice & Mobile
-
-| Use Case                     | What It Does                                                                  |
-| ---------------------------- | ----------------------------------------------------------------------------- |
-| **Phone-Based Assistant**    | Access Open CLAW via phone calls/SMS — calendar, Jira, web search, hands-free |
-| **Health & Symptom Tracker** | Track food/symptoms to identify triggers, with scheduled reminders            |
-
----
-
-## The Open CLAW Developer Roadmap
-
-Here's the path from "never heard of it" to "running a multi-agent system that manages your life." Each phase builds on the last.
-
-### Phase 1 — Install & Connect (Day 1)
-
-The foundation. Get Open CLAW running and connected to one channel.
-
-```bash
-# Install
-npm install -g openclaw@latest
-
-# Run the wizard — it walks you through everything
-openclaw onboard --install-daemon
-
-# Start the gateway
-openclaw gateway --port 18789 --verbose
-```
-
-**What you learn:**
-
-- Gateway architecture (the control plane)
-- Channel pairing (WhatsApp, Telegram, Slack, etc.)
-- Security defaults and DM policies
-- The `openclaw doctor` diagnostic tool
-
-**Key commands:**
-
-```bash
-openclaw onboard          # Setup wizard
-openclaw gateway          # Start the control plane
-openclaw doctor           # Diagnose configuration issues
-openclaw update           # Switch between stable/beta/dev channels
-```
-
-### Phase 2 — Talk to It (Week 1)
-
-Send messages. Get responses. Understand the agent model.
-
-```bash
-# Send a message
-openclaw message send --to +1234567890 --message "Hello from Open CLAW"
-
-# Talk to the agent directly
-openclaw agent --message "What's on my calendar today?" --thinking high
-
-# Use with specific model
-openclaw agent --message "Summarize this article" --model anthropic/claude-opus-4
-```
-
-**What you learn:**
-
-- Agent runtime and RPC mode
-- Model selection and auth (OpenAI, Anthropic, etc.)
-- Session management
-- Thinking modes (low, medium, high)
-
-### Phase 3 — Skills & Tools (Week 2-3)
-
-Skills are how Open CLAW does things beyond conversation. Browse the web. Run cron jobs. Control your canvas.
-
-**What you learn:**
-
-- [Bundled skills](https://docs.openclaw.ai/tools/skills) vs managed vs workspace skills
-- Browser tool integration
-- Cron scheduling (`openclaw cron`)
-- Canvas and A2UI (agent-driven visual workspace)
-- Tool streaming and block streaming
-
-**Key skills to explore:**
-
-- Web browsing and search
-- File system access
-- API calls via n8n webhooks
-- Calendar and email integration
-- Memory and knowledge base
-
-### Phase 4 — Multi-Channel (Week 3-4)
-
-Connect multiple channels. Route different contacts to different agents.
-
-**What you learn:**
-
-- Multi-agent routing configuration
-- Per-channel security policies
-- Allowlists and pairing codes
-- Workspace isolation
-
-**Supported channels:** WhatsApp, Telegram, Slack, Discord, Google Chat, Signal, iMessage, BlueBubbles, IRC, Microsoft Teams, Matrix, Feishu, LINE, Mattermost, Nextcloud Talk, Nostr, Synology Chat, Tlon, Twitch, Zalo, WebChat
-
-### Phase 5 — Voice & Companion Apps (Month 2)
-
-Add voice. Go mobile.
-
-**What you learn:**
-
-- Voice Wake on macOS/iOS
-- Talk Mode on Android
-- ElevenLabs TTS integration
-- macOS menu bar companion app
-- iOS/Android nodes
-
-### Phase 6 — Multi-Agent Systems (Month 2-3)
-
-Run multiple specialized agents as a coordinated team.
-
-**What you learn:**
-
-- Multi-agent routing architecture
-- STATE.yaml coordination pattern
-- Parallel subagent execution
-- Agent specialization (strategy, dev, marketing, etc.)
-- Inter-agent communication
-
-### Phase 7 — Build from Source & Contribute (Month 3+)
-
-Go deep. Build from source. Contribute to the project.
-
-```bash
-git clone https://github.com/openclaw/openclaw.git
-cd openclaw
-
-pnpm install
-pnpm ui:build
-pnpm build
-
-# Dev loop with auto-reload
-pnpm gateway:watch
-```
-
-**What you learn:**
-
-- TypeScript codebase architecture
-- Gateway internals (WebSocket control plane)
-- Pi agent runtime
-- Plugin/skill development
-- Contributing to open source
-
----
-
-## CLI Tools That Supercharge Open CLAW
-
-Open CLAW is a CLI-first tool. These open-source CLI tools from [Ahmad Awais](https://github.com/AhmadAwais) pair naturally with it — use them as skills, pipe their output to your agent, or let Open CLAW orchestrate them.
-
-### Terminal UI & Developer Experience
-
-| Tool                                                               | What It Does                                                  | Install                |
-| ------------------------------------------------------------------ | ------------------------------------------------------------- | ---------------------- |
-| [**terminui**](https://github.com/ahmadawais/terminui)             | Fast, functional TypeScript library for building terminal UIs | `npm i terminui`       |
-| [**cli-welcome**](https://github.com/ahmadawais/cli-welcome)       | Welcome headers for Node.js CLI apps                          | `npm i cli-welcome`    |
-| [**cli-alerts**](https://github.com/ahmadawais/cli-alerts)         | Cross-platform CLI alerts with colors and symbols             | `npm i cli-alerts`     |
-| [**cli-meow-help**](https://github.com/ahmadawais/cli-meow-help)   | Auto-formatted help text for meow CLI apps                    | `npm i cli-meow-help`  |
-| [**cli-check-node**](https://github.com/ahmadawais/cli-check-node) | Check installed Node.js version meets requirements            | `npm i cli-check-node` |
-
-### Build & Ship CLIs
-
-| Tool                                                                           | What It Does                                       | Install                                                     |
-| ------------------------------------------------------------------------------ | -------------------------------------------------- | ----------------------------------------------------------- |
-| [**create-node-cli**](https://github.com/ahmadawais/create-node-cli)           | Scaffold a new Node.js CLI app in minutes          | `npx create-node-cli`                                       |
-| [**Emoji-Log**](https://github.com/ahmadawais/Emoji-Log)                       | Emoji-based git commit message spec (📦👌🐛📖🚀🤖) | [Spec](https://github.com/ahmadawais/Emoji-Log)             |
-| [**Node-CLI-Tips-Tricks**](https://github.com/ahmadawais/Node-CLI-Tips-Tricks) | Production-ready Node.js CLI best practices        | [Guide](https://github.com/ahmadawais/Node-CLI-Tips-Tricks) |
-
-### Content & Social Media
-
-| Tool                                                               | What It Does                                                             | Install                   |
-| ------------------------------------------------------------------ | ------------------------------------------------------------------------ | ------------------------- |
-| [**typefully-cli**](https://github.com/ahmadawais/typefully-cli)   | Draft, schedule, manage posts on X, LinkedIn, Threads, Bluesky, Mastodon | `npm i -g typefully-cli`  |
-| [**brnd**](https://github.com/ahmadawais/brnd)                     | Extract brand identity from any website using Firecrawl                  | `npm i -g brnd`           |
-| [**excalidraw-cli**](https://github.com/ahmadawais/excalidraw-cli) | Create Excalidraw diagrams from the command line                         | `npm i -g excalidraw-cli` |
-
-### Productivity & Workflow
-
-| Tool                                                         | What It Does                                                        | Install                |
-| ------------------------------------------------------------ | ------------------------------------------------------------------- | ---------------------- |
-| [**shipsheet**](https://github.com/ahmadawais/shipsheet)     | Local tasks.json ship sheet — exportable to Kanban or Google Sheets | `npm i -g shipsheet`   |
-| [**awaz**](https://github.com/ahmadawais/awaz)               | Text-to-speech CLI with ElevenLabs voices                           | `npm i -g awaz`        |
-| [**ramadan-cli**](https://github.com/ahmadawais/ramadan-cli) | Check prayer times anywhere in the world                            | `npm i -g ramadan-cli` |
-| [**corona-cli**](https://github.com/ahmadawais/corona-cli)   | Track COVID-19 data worldwide in the terminal                       | `npm i -g corona-cli`  |
-
-### Developer Tools
-
-| Tool                                                                                   | What It Does                                              | Install                                                                                                |
-| -------------------------------------------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| [**Shades of Purple**](https://github.com/ahmadawais/shades-of-purple-vscode)          | VS Code theme — bold purple tones for your editor         | [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=ahmadawais.shades-of-purple) |
-| [**WPGulp**](https://github.com/ahmadawais/WPGulp)                                     | Advanced Gulp workflow for WordPress development          | `npx wpgulp`                                                                                           |
-| [**wp-continuous-deployment**](https://github.com/ahmadawais/wp-continuous-deployment) | DevOps-free CD pipeline for WordPress with GitHub Actions | [Template](https://github.com/ahmadawais/wp-continuous-deployment)                                     |
-| [**create-guten-block**](https://github.com/ahmadawais/create-guten-block)             | Zero-config toolkit for WordPress Gutenberg blocks        | `npx create-guten-block`                                                                               |
-
-### How to Wire These CLIs Into Open CLAW
-
-The pattern is simple. Open CLAW skills can invoke any CLI tool. Here's the general approach:
-
-**1. Direct CLI execution via skills:**
-Your Open CLAW agent can run any installed CLI tool. Tell it to use `typefully-cli` to schedule a post, `excalidraw-cli` to generate a diagram, or `shipsheet` to manage your tasks.
-
-**2. Pipe output to the agent:**
-
-```bash
-# Get brand info, feed it to your agent
-brnd https://example.com | openclaw agent --message "Analyze this brand identity"
-
-# Track tasks and brief the agent
-shipsheet list | openclaw agent --message "Prioritize these tasks for today"
-```
-
-**3. Cron-scheduled automation:**
-Set up Open CLAW cron jobs that run CLI tools on a schedule:
-
-- Morning: `ramadan-cli` for prayer times → sent to Telegram
-- Daily: `typefully-cli` to queue social posts → reviewed by agent
-- Weekly: `shipsheet export` → agent generates progress report
-
-**4. Build custom skills with CLI building blocks:**
-Use `create-node-cli` to scaffold a new skill, `cli-alerts` for status output, `cli-welcome` for branding, and `terminui` for interactive interfaces. Then register it as an Open CLAW workspace skill.
-
----
-
-## Architecture at a Glance
-
-```
-┌──────────────────────────────────────────────┐
-│                 Open CLAW Gateway             │
-│            (Local Control Plane)              │
-├──────────────────────────────────────────────┤
-│                                              │
-│   ┌─────────┐  ┌─────────┐  ┌──────────┐   │
-│   │  Agent   │  │  Agent   │  │  Agent   │   │
-│   │ (Personal)│ │  (Work)  │  │ (DevOps) │   │
-│   └────┬────┘  └────┬────┘  └────┬─────┘   │
-│        │             │            │          │
-├────────┴─────────────┴────────────┴──────────┤
-│              Skills & Tools                   │
-│  ┌────────┐ ┌────────┐ ┌────────┐ ┌───────┐ │
-│  │Browser │ │ Cron   │ │Canvas  │ │ CLIs  │ │
-│  │        │ │        │ │        │ │       │ │
-│  └────────┘ └────────┘ └────────┘ └───────┘ │
-├──────────────────────────────────────────────┤
-│                 Channels                      │
-│  WhatsApp · Telegram · Slack · Discord       │
-│  Signal · iMessage · Teams · Matrix          │
-│  IRC · LINE · WebChat · 10+ more             │
-├──────────────────────────────────────────────┤
-│              Companion Apps                   │
-│  macOS Menu Bar · iOS · Android · Voice      │
-└──────────────────────────────────────────────┘
-```
-
----
-
-## Getting Started Right Now
-
-```bash
-# 1. Install
-npm install -g openclaw@latest
-
-# 2. Onboard (the wizard handles everything)
-openclaw onboard --install-daemon
-
-# 3. Send your first message
-openclaw agent --message "Hello, set me up" --thinking high
-```
-
-That's it. Everything else is configuration.
-
-**Essential links:**
+**Links:**
 
 - [Open CLAW on GitHub](https://github.com/openclaw/openclaw)
 - [Documentation](https://docs.openclaw.ai)
 - [Getting Started Guide](https://docs.openclaw.ai/start/getting-started)
 - [Discord Community](https://discord.gg/clawd)
-- [Awesome Use Cases](https://github.com/hesamsheikh/awesome-openclaw-usecases)
-- [Ahmad Awais CLI Tools](https://github.com/AhmadAwais)
-- [DeepWiki](https://deepwiki.com/openclaw/openclaw)
 
 ---
 
-## Why This Matters
-
-The best tools disappear into your workflow. You don't open them — they're already there.
-
-Open CLAW isn't another AI chat window. It's a daemon. It sits in the background, connected to everything, waiting for you to need it. And when you do, you talk to it wherever you are — your terminal, your messages, your phone.
-
-That's the future of personal AI. Not another app. An assistant.
-
----
-
-_This guide is part of the [developer-roadmap](https://github.com/ahmadawais/developer-roadmap) project. Contributions welcome._
+_Contributions welcome. If you build something interesting with Open CLAW, add it here._
