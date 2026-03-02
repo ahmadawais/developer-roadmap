@@ -16,7 +16,7 @@ permalink: /openclaw
 
 ### 1. PR Review Digest
 
-You push code all day. Reviews pile up. Set up your agent to watch your GitHub repos and send you a Slack DM every evening: "4 PRs need your review. The auth refactor is the big one — 847 lines, touches 12 files. The other three are under 50 lines each." Next morning, reply "approve the three small ones, I'll look at auth after standup." Done.
+You push code all day. Reviews pile up. Set up your agent to watch your GitHub repos and send you a Slack DM every evening: "4 PRs need your review. The auth refactor is the big one — 847 lines, touches 12 files. The other three are under 50 lines each. Here are the key changes in each." Next morning, you review the summaries, click through the small ones quickly, and block time for the auth refactor.
 
 **How it works:** Cron job polls GitHub API every few hours. Agent summarizes diffs, flags risky changes (large files, security-sensitive paths, dependency updates). Delivers via whatever channel you're on. You respond in natural language and the agent posts review comments.
 
@@ -132,9 +132,9 @@ Your agent watches your email for shipping confirmations. When it spots one, it 
 
 ### 19. Birthday & Gift Assistant
 
-Two days before your friend's birthday, your agent reminds you. But it goes further: "Sarah turns 35 on Thursday. Last year you got her a cookbook. She's been posting about pottery classes lately. The studio near her apartment does gift cards." You reply "order the gift card" and it handles it.
+Two days before your friend's birthday, your agent reminds you. But it goes further: "Sarah turns 35 on Thursday. Last year you got her a cookbook. She's been posting about pottery classes lately. The studio near her apartment does gift cards — here's the link." You click through and order it yourself in 30 seconds.
 
-**How it works:** Contact date tracking in memory. Social media monitoring (optional) for interest signals. Purchase history in memory to avoid repeats. E-commerce browsing via browser skill for gift suggestions.
+**How it works:** Contact date tracking in memory. Social media monitoring (optional) for interest signals. Purchase history in memory to avoid repeats. E-commerce browsing via browser skill for gift suggestions and direct links.
 
 ### 20. Subscription Audit
 
@@ -242,7 +242,7 @@ You photograph your lunch and send it to your agent. "Grilled chicken salad with
 
 Before your weekly therapy appointment, your agent compiles a brief for you (not your therapist — for your own reference): "This week you mentioned feeling overwhelmed on Tuesday and Thursday. The trigger both times was work deadlines. You slept poorly those nights. You had two really good days — Wednesday after your run and Saturday with friends." Helps you make the most of your session.
 
-**How it works:** Analyzes your messages to the agent throughout the week (strictly private, local-only). Identifies mood patterns, stressors, and positive experiences. Delivers a personal summary the morning of your appointment.
+**How it works:** You explicitly opt in and log mood entries throughout the week — the agent only analyzes what you send it directly. All data stays local on your machine (Open CLAW is local-first by design). Delivers a personal summary the morning of your appointment. Note: review your local health data regulations before tracking personal wellness data.
 
 ---
 
